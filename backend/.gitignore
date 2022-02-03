@@ -41,6 +41,11 @@ build/Release
 node_modules/
 jspm_packages/
 
+albums/
+profile_photos/
+cover_photos/
+singles/
+
 # TypeScript v1 declaration files
 typings/
 
