@@ -1,13 +1,22 @@
 require('dotenv').config()
 const env = process.env
+const cors = require('cors')
 const express = require('express')
+const mongoose = require('mongoose')
+const auth = require('./auth');
 
 const app = express()
-const mongoose = require('mongoose')
+app.use(cors())
+app.use(express.json())
+
 mongoose.connect('mongodb+srv://' + env['MONGO_USER'] + ':' + env['MONGO_PASS'] + '@' + env['MONGO_CLUSTER'] + '.nvmh8.mongodb.net/'
  + env['MONGO_DATABASE_NAME'] + '?retryWrites=true&w=majority', (err) => {
-    console.log(err)
-    console.log("uspesno povezivanje")
+    if(!err)
+        console.log("uspesno povezivanje")
+    else
+        console.log(err)
 });
 
-app.listen(5000, () => { console.log("konektovan") })
+auth(app)
+
+app.listen(3030, () => { console.log("Listening on port 3030...") })
