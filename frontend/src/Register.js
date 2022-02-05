@@ -19,6 +19,7 @@ class Register extends Component {
 
     register(e) {
         e.preventDefault()
+        let that = this
         if(this.state.email === "" || this.state.password === "" ||
             this.state.firstName === "" || this.state.lastName === "") {
             this.setState({invalidRegInput: 'You need to fill all fields marked with *'}); 
@@ -32,20 +33,22 @@ class Register extends Component {
             password: this.state.password,
         })
         .then(function (response) {
-            console.log(response);
+            if(response.status === 200)
+                that.props.navigate('/login')
         })
         .catch(function (error) {
-            console.log(error);
+            let data = error.response.data
+            if (error.response.status === 400) 
+                that.setState({invalidRegInput: data.message})
         });
     }
 
     render() {
-        /*if (localStorage.getItem('token')) {TODO:
+        if (localStorage.getItem('token')) {
             return (
-                <Navigate to='/' />
+                <Navigate to='/home' />
             )
-        }*/
-        
+        }
         return (
             <form>
                 <h3>Register</h3>

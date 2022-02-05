@@ -5,6 +5,8 @@ import Login from './Login'
 import Register from './Register';
 import { Routes, Route, Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import Home from './Home'
+import Profile from './Profile'
 
 class App extends React.Component {
 
@@ -22,7 +24,33 @@ class App extends React.Component {
             <Link className="navbar-brand" to={"/login"}>Oglasi</Link>
             <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
                 {
-                localStorage.getItem('token') ? null
+                localStorage.getItem('token') ? 
+                <ul className="navbar-nav ml-auto">
+                  <li className="nav-item">
+                    <Link className="nav-link" to={"/home"}>Home</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to={"/following"}>My orders</Link>
+                  </li> 
+                  <li className="nav-item">
+                    <Link className="nav-link" to={"/playlists"}>Orders</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to={"/profile/" + localStorage.getItem('userId')}>Profile</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to={"/leaderboard"}>Add ad</Link>
+                  </li>
+                  <li className="nav-item">
+                    <a href="" className="nav-link" onClick={
+                      (e) => {
+                        e.preventDefault()
+                        localStorage.removeItem('token')
+                        this.props.navigate('/login')
+                      }
+                    }>Log out</a>
+                  </li>
+                </ul>
                 :
                 <ul className="navbar-nav ml-auto">
                   <li className="nav-item">
@@ -60,6 +88,8 @@ class App extends React.Component {
               </div>
             </div>
           } />
+          <Route path="/home" element={<Home/>} />
+          <Route path="/profile/:userId" element={<Profile/>} />
         </Routes>
         </div>
         

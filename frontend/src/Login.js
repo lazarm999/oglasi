@@ -16,51 +16,31 @@ class Login extends Component {
 
     login(e) {
         e.preventDefault()
+        let that = this
         axios.post('http://localhost:3030/login/', {
             email: this.state.email,
             password: this.state.password,
         })
         .then(function (response) {
-            console.log(response);
+            let data = response.data.data
+            if(response.status === 200) {
+                localStorage.setItem('token', data.token)
+                localStorage.setItem('userId', data.userId)
+                that.props.navigate('/home')
+            }
         })
         .catch(function (error) {
-            console.log(error);
+            if (error.response.status === 401) 
+                that.setState({invalidLoginInput: error.response.data.message})
         });
-      /*fetch("http://localhost:3030/login", {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: this.state.email,
-                password: this.state.password,
-            })
-        })
-        .then(res => res.json())
-        .then(
-            (result) => {
-                if(result.status === 200) {
-                    localStorage.setItem('token', result.data.token)
-                    localStorage.setItem('username', result.data.username)
-                    localStorage.setItem('userId', result.data.userId)
-                    this.props.navigate('/home')
-                } else if(result.status === 400)
-                    this.setState({invalidLoginInput: result.message})
-            },
-            (error) => {
-                console.log(error)
-            }
-        )*/
     }
 
     render() {
-        
-        /*if (localStorage.getItem('token')) {TODO:
+        if (localStorage.getItem('token')) {
             return (
-                <Navigate to='/' />
+                <Navigate to='/home' />
             )
-        }*/
+        }
         return (
           <form>
             <h3>Sign In</h3>

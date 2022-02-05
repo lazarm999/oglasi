@@ -1,4 +1,3 @@
-
 const UserModel = require('./models/user')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -13,12 +12,12 @@ module.exports = function(app){
             req.body.password = bcrypt.hashSync(req.body.password, 10)
             try { 
                 await UserModel.create(req.body)
-                res.status(200).json({message: "OK"})
+                res.sendStatus(200)
             } catch (error){
                 if (error.name === "ValidationError") {
-                    res.status(400).send("You must fill all required fields")
+                    res.status(400).json({message: "You must fill all required fields."})
                 } else
-                    res.status(500).send("Something went wrong.")
+                    res.status(500).json({message: "Something went wrong."})
             }
         }
     })
@@ -29,7 +28,7 @@ module.exports = function(app){
             if(user && bcrypt.compareSync(req.body.password, user.password)){
                 let userId = user._id.toString()
                 token = jwt.sign({user_id: userId}, env.JWT_SECRET)
-                res.status(200).json({status: 200, data: { token: token, userId: userId}})
+                res.status(200).json({data: { token: token, userId: userId}})
             } else {
                 res.status(401).json({message: "Wrong email or password."})
             }

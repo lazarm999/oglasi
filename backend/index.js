@@ -4,6 +4,7 @@ const cors = require('cors')
 const express = require('express')
 const mongoose = require('mongoose')
 const auth = require('./auth');
+const profile = require('./profile');
 
 const app = express()
 app.use(cors())
@@ -18,5 +19,6 @@ mongoose.connect('mongodb+srv://' + env['MONGO_USER'] + ':' + env['MONGO_PASS'] 
 });
 
 auth(app)
+profile(app)
 
 app.listen(3030, () => { console.log("Listening on port 3030...") })
