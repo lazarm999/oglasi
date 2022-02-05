@@ -24,7 +24,6 @@ class Profile extends Component {
         axios.get("http://localhost:3030/user/" + this.state.user._id)
         .then(function (response) {
             let data = response.data.data
-            console.log(data)
             if(response.status === 200) {
                 that.setState({
                     user: data

@@ -7,6 +7,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Home from './Home'
 import Profile from './Profile'
+import AddAd from './AddAd'
 
 class App extends React.Component {
 
@@ -90,6 +91,7 @@ class App extends React.Component {
           } />
           <Route path="/home" element={<Home/>} />
           <Route path="/profile/:userId" element={<Profile/>} />
+          <Route path="/addAd" element={<AddAd/>} />
         </Routes>
         </div>
         
