@@ -1,0 +1,284 @@
+.s007 {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+      justify-content: center;
+  font-family: 'Roboto', sans-serif;
+}
+.s007 form {
+  width: 100%;
+  max-width: 790px;
+  margin: 0;
+}
+
+.s007 form .inner-form {
+  width: 100%;
+}
+
+.s007 form .inner-form .input-field {
+  position: relative;
+}
+
+.s007 form .inner-form .input-field input {
+  height: 100%;
+  border: 0;
+  background: #fff;
+  display: block;
+  width: 100%;
+  padding: 10px 32px 10px 70px;
+  font-size: 18px;
+  color: #666;
+  border-radius: 3px;
+  height: 70px;
+  color: #555;
+}
+
+.s007 form .inner-form .input-field input.placeholder {
+  color: #999;
+  font-size: 18px;
+}
+
+.s007 form .inner-form .input-field input:-moz-placeholder {
+  color: #999;
+  font-size: 18px;
+}
+
+.s007 form .inner-form .input-field input::-webkit-input-placeholder {
+  color: #999;
+  font-size: 18px;
+}
+
+.s007 form .inner-form .input-field input:hover, .s007 form .inner-form .input-field input:focus {
+  box-shadow: none;
+  outline: 0;
+}
+
+.s007 form .inner-form .btn-search {
+  min-width: 100px;
+  height: 40px;
+  padding: 0 15px;
+  background: #57b846;
+  white-space: nowrap;
+  border-radius: 3px;
+  font-size: 14px;
+  color: #fff;
+  transition: all .2s ease-out, color .2s ease-out;
+  border: 0;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.s007 form .inner-form .btn-search:hover {
+  background: #4ea63f;
+}
+
+.s007 form .inner-form .btn-delete {
+  height: 40px;
+  background: transparent;
+  white-space: nowrap;
+  border-radius: 3px;
+  font-size: 14px;
+  color: #555;
+  transition: all .2s ease-out, color .2s ease-out;
+  border: 0;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.s007 form .inner-form .input-field .btn-delete:hover {
+  color: #000;
+}
+
+.s007 form .inner-form .basic-search {
+  margin-bottom: 5px;
+  box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.15);
+}
+
+.s007 form .inner-form .basic-search .input-field {
+  width: 100%;
+}
+
+.s007 form .inner-form .basic-search .input-field input {
+  padding: 10px 110px 10px 70px;
+}
+
+.s007 form .inner-form .basic-search .input-field .icon-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: end;
+      justify-content: flex-end;
+  -ms-flex-align: center;
+      align-items: center;
+  width: 60px;
+  height: 100%;
+}
+
+.s007 form .inner-form .basic-search .input-field .icon-wrap svg {
+  width: 34px;
+  height: 34px;
+  fill: #ccc;
+}
+
+.s007 form .inner-form .basic-search .input-field .result-count {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: start;
+      justify-content: flex-start;
+  -ms-flex-align: center;
+      align-items: center;
+  width: 110px;
+  top: 0;
+  right: 0;
+  position: absolute;
+  font-weight: bold;
+  color: #555;
+  height: 100%;
+  font-size: 14px;
+}
+
+.s007 form .inner-form .basic-search .input-field .result-count span {
+  color: #57b846;
+  padding-right: 5px;
+}
+
+.s007 form .inner-form .advanced-search {
+  background: #fff;
+  padding: 20px 40px;
+  border-radius: 3px;
+  box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.15);
+}
+
+.s007 form .inner-form .advanced-search .desc {
+  font-size: 15px;
+  color: #999;
+  display: block;
+  margin-bottom: 26px;
+}
+
+.s007 form .inner-form .advanced-search .row {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: justify;
+      justify-content: space-evenly;
+  -ms-flex-align: center;
+      align-items: center;
+}
+
+.s007 form .inner-form .advanced-search .row.third {
+  margin-bottom: 0;
+}
+
+.s007 form .inner-form .advanced-search .input-field {
+  width: calc(33.3333% - 30px);
+}
+
+.s007 form .inner-form .advanced-search .input-select {
+  height: 40px;
+}
+
+.s007 form .inner-form .advanced-search .choices__inner {
+  background: transparent;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 2px solid #ccc;
+  height: 100%;
+  color: #fff;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  padding: 0;
+  padding-right: 30px;
+  font-size: 14px;
+}
+
+.s007 form .inner-form .advanced-search .choices__inner .choices__list.choices__list--single {
+  display: -ms-flexbox;
+  display: flex;
+  padding: 0;
+  -ms-flex-align: center;
+      align-items: center;
+  height: 100%;
+  padding-top: 10px;
+}
+
+.s007 form .inner-form .advanced-search .choices__inner .choices__item.choices__item--selectable.choices__placeholder {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  height: 100%;
+  opacity: 1;
+  color: #888;
+}
+
+.s007 form .inner-form .advanced-search .choices__inner .choices__list--single .choices__item {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  height: 100%;
+  color: #555;
+}
+
+.s007 form .inner-form .advanced-search .choices__list.choices__list--dropdown {
+  border: 0;
+  background: #fff;
+  padding: 20px 30px;
+  margin-top: 2px;
+  border-radius: 4px;
+  box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.15);
+}
+
+.s007 form .inner-form .advanced-search .choices__list.choices__list--dropdown .choices__item--selectable {
+  padding-right: 0;
+}
+
+.s007 form .inner-form .advanced-search .choices__list--dropdown .choices__item--selectable.is-highlighted {
+  background: #fff;
+  color: #57b846;
+}
+
+.s007 form .inner-form .advanced-search .choices__list--dropdown .choices__item {
+  color: #555;
+  min-height: 24px;
+}
+
+.s007 form .inner-form .advanced-search .choices[data-type*="select-one"]:after {
+  border: 0;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  transform: none;
+  opacity: 1;
+  right: 0;
+  top: 10px;
+  background-size: 18px 18px;
+  background-position: right center;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg fill='%23999' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3e%3cpath d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+}
+
+.s007 form .inner-form .advanced-search .choices[data-type*="select-one"] .choices__button {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg fill='%2357b846' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3e%3cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/%3e%3c/svg%3e");
+  background-size: 16px 16px;
+  background-position: right center;
+  width: 32px;
+  height: 32px;
+  opacity: 1;
+  display: none;
+  top: 10px;
+  right: 0;
+  transform: none;
+  margin: 0;
+}
+
+#homeAdsContainer{
+  width: 100%;
+  max-width: 790px;
+  background-color: white;
+  margin: 12px;
+}

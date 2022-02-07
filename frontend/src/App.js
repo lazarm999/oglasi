@@ -40,7 +40,7 @@ class App extends React.Component {
                     <Link className="nav-link" to={"/profile/" + localStorage.getItem('userId')}>Profile</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link" to={"/leaderboard"}>Add ad</Link>
+                    <Link className="nav-link" to={"/addAd"}>Add ad</Link>
                   </li>
                   <li className="nav-item">
                     <a href="" className="nav-link" onClick={
