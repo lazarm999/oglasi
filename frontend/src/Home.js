@@ -99,10 +99,12 @@ class Home extends Component {
                         this.state.ads.map((ad, i) => (
                             <div key={i} className="row">
                                 <div className="col-md-3">
-                                    <img src="defaultProduct.png" alt="Girl in a jacket" width="100" height="100"/>
+                                    <img src="defaultProduct.png" width="100" height="100"/>
                                 </div>
                                 <div className="col-md-4">
-                                    <div className="col-md-12"><h4>Ovo je naslov</h4></div>
+                                    <div className="col-md-12">
+                                        <a href={"/ad"} style={{textDecoration: "none"}}><h4>Ovo je naslov</h4></a>
+                                    </div>
                                     <div className="col-md-12">Ovo je opis ovog divnog proizvoda...</div>
                                 </div>
                                 <div className="col-md-3"><p>1500 din.</p></div>

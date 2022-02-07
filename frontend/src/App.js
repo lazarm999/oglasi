@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import Home from './Home'
 import Profile from './Profile'
 import AddAd from './AddAd'
+import Ad from './Ad'
 
 class App extends React.Component {
 
@@ -92,6 +93,7 @@ class App extends React.Component {
           <Route path="/home" element={<Home/>} />
           <Route path="/profile/:userId" element={<Profile/>} />
           <Route path="/addAd" element={<AddAd/>} />
+          <Route path="/ad" element={<Ad/>} />
         </Routes>
         </div>
         
