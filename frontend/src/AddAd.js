@@ -103,8 +103,10 @@ class AddAd extends Component {
 
     render() {
         return (
-          <div className="row container offset-md-2 col-md-8">
-            <form className="col-md-10 offset-md-2">
+          <div className="row container offset-md-3 col-md-6" 
+            style={{backgroundColor: "#f2f1ed", paddingBottom: "30px", paddingTop: "30px", 
+            minHeight: "600px", borderRadius: "10px"}}>
+            <form className="col-md-10 offset-md-2" >
                 <h3>Add ad</h3>
                 <div className="form-group col-md-8">
                     <label>Title *</label>
@@ -156,7 +158,7 @@ class AddAd extends Component {
                 </div>
                 <div className="col" style={{marginTop: "10px"}}>
                   <h5>Upload photos:</h5>
-                  <input id="photoFiles" multiple accept="image/*" type="file" 
+                  <input id="photoFiles" multiple accept="image/*" type="file" style={{marginTop: "10px"}}
                     onChange={(e) => this.setState({photoFiles: e.target.files})}/>
                 </div>
                 <button style={{marginTop: "20px"}} id="addAdBtn" type="submit" className="btn btn-warning btn-block" 

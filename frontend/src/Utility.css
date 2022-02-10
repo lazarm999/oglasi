@@ -1,0 +1,22 @@
+.ratingContainer{
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    width: 95%;
+    align-self: center;
+    margin-left: 2.5%;
+    margin-bottom: 10px;
+    border-radius: 2px;
+    padding-top: 5px;
+    padding: 5px;
+}
+
+.ordersListContainer p{
+    margin-bottom: 5px;
+    font-size: large;
+}
+
+.ordersListContainer{
+    margin-bottom: 8px;
+    border-radius: 5px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
