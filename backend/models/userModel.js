@@ -6,6 +6,7 @@ const UserSchema = new mongoose.Schema({
     firstName: {type: String, required: true},
     lastName: {type: String, required: true},
     phone: {type: String, default: ""},
-}, {collection: "user"})
+    isAdmin: {type: Boolean, default: false, immutable: true}
+}, {collection: "user", strict: true})
 
 module.exports = mongoose.model("UserModel", UserSchema)
