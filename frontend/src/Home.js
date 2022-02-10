@@ -1,36 +1,28 @@
 import { Component } from "react";
 import { useNavigate } from "react-router-dom";
 import './Home.css';
-import { fetchCategories, fetchLocations } from "./Utility";
+import { Locations, Categories, Ads } from "./Utility";
 
 class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            locations: ["Location"],
-            categories: ["Category"],
             location: "",
             category: "",
-            price: 0,
+            from: 0,
+            to: 0,
             searchText: "",
-            ads: ["", "", ""]
+            sortBy: "",
+            ads: ["", "", ""],
+            sortByList: ["Price", "Date", "User's rating"]
         };
     }
 
     componentDidMount(){
-        /*fetchCategories((data) => {
-            console.log(data)
-        }, (error) => {
-            console.log(error)
-        })
-        fetchLocations((data) => {
-            console.log(data)
-        }, (error) => {
-            console.log(error)
-        })*/
     }
 
     render(){
+        console.log(this.state.location)
         return(
         <div className="padding">
             <div className="col-md-8 offset-md-2">
@@ -48,71 +40,56 @@ class Home extends Component {
                                 </div>
                             </div>
                             <div className="advanced-search">
-                                <span className="desc">Advanced Search</span>
+                                <h4>Advanced search</h4>
                                 <div className="row">
-                                    <div className="col-md-8">
-                                        <div className="row">
-                                            <div className="col-md-4">
-                                                <div className="input-select">
-                                                <select id="searchLocations" className="form-control" name="locations" 
-                                                    onChange={(e) => this.setState({location: e.target.value})}>
-                                                    {this.state.locations.map((location, i)=>(
-                                                    <option key={i} value={location}>{location}</option>
-                                                    ))}
-                                                </select>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4">
-                                                <div className="input-select">
-                                                <select id="searchCategories" className="form-control" name="categories" 
-                                                    onChange={(e) => this.setState({category: e.target.value})}>
-                                                    {this.state.categories.map((location, i)=>(
-                                                    <option key={i} value={location}>{location}</option>
-                                                    ))}
-                                                </select>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4">
-                                                <div className="input-select">
-                                                <input type="number" className="form-control" placeholder="Price"
-                                                    onChange={(e) => this.setState({price: e.target.value})}/>
-                                                </div>
-                                            </div>
+                                    <div className="col-md-3">
+                                        <div className="input-select">
+                                            <Locations setLocation = {(location) => this.setState({location: location})} />
                                         </div>
                                     </div>
-                                    <div className="col-md-4">
-                                        <div className="row">
+                                    <div className="col-md-3">
+                                        <div className="input-select">
+                                            <Categories setCategory = {(category) => this.setState({category: category})} />
+                                        </div>
+                                    </div>
+                                    <div className="col-md-3">
+                                        <div className="input-select">
+                                        <input type="number" className="form-control" placeholder="From"
+                                            onChange={(e) => this.setState({from: e.target.value})}/>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-3">
+                                        <div className="input-select">
+                                        <input type="number" className="form-control" placeholder="To"
+                                            onChange={(e) => this.setState({to: e.target.value})}/>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-3">
+                                        <select className="form-control" name="sortBy" placeholder="Sort by"
+                                            onChange={(e) => this.setState({sortBy: e.target.value})}>
+                                            <option value="" disabled selected>Sort by</option>
+                                            {
+                                                this.state.sortByList.map((sortBy, i)=>(
+                                                    <option key={i} value={sortBy}>{sortBy}</option>
+                                                ))
+                                            }
+                                        </select>
+                                    </div>
+                                    <div className="row col-md-4" style={{marginTop: "10px"}}>
                                             <div className="col-md-6">
                                                 <button className="btn-search">Search</button>
                                             </div>
                                             <div className="col-md-6">
                                                 <button className="btn-delete" id="delete">Reset</button>
                                             </div>
-                                        </div>
                                     </div>
+                                    
                                 </div>
                             </div>
                         </div>
                     </form>
                     <div className="card col-md-12" id="homeAdsContainer">
-                    {
-                        this.state.ads.map((ad, i) => (
-                            <div key={i} className="row">
-                                <div className="col-md-3">
-                                    <img src="defaultProduct.png" width="100" height="100"/>
-                                </div>
-                                <div className="col-md-4">
-                                    <div className="col-md-12">
-                                        <a href={"/ad"} style={{textDecoration: "none"}}><h4>Ovo je naslov</h4></a>
-                                    </div>
-                                    <div className="col-md-12">Ovo je opis ovog divnog proizvoda...</div>
-                                </div>
-                                <div className="col-md-3"><p>1500 din.</p></div>
-                                <div className="col-md-2"><p>Krusevac</p></div>
-                                <hr style={{width: "95%", margin: "5px auto"}}/>
-                            </div>
-                        ))
-                    }
+                        <Ads ads={this.state.ads} />
                     </div>
                 </div>
             </div>

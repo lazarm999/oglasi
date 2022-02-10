@@ -9,6 +9,8 @@ import Home from './Home'
 import Profile from './Profile'
 import AddAd from './AddAd'
 import Ad from './Ad'
+import Orders from './Orders'
+import Statistics from './Statistics'
 
 class App extends React.Component {
 
@@ -32,16 +34,19 @@ class App extends React.Component {
                     <Link className="nav-link" to={"/home"}>Home</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link" to={"/following"}>My orders</Link>
+                    <Link className="nav-link" to={"/myOrders"}>My orders</Link>
                   </li> 
                   <li className="nav-item">
-                    <Link className="nav-link" to={"/playlists"}>Orders</Link>
+                    <Link className="nav-link" to={"/orders"}>Orders</Link>
                   </li>
                   <li className="nav-item">
                     <Link className="nav-link" to={"/profile/" + localStorage.getItem('userId')}>Profile</Link>
                   </li>
                   <li className="nav-item">
                     <Link className="nav-link" to={"/addAd"}>Add ad</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to={"/statistics"}>Statistics</Link>
                   </li>
                   <li className="nav-item">
                     <a href="" className="nav-link" onClick={
@@ -94,6 +99,9 @@ class App extends React.Component {
           <Route path="/profile/:userId" element={<Profile/>} />
           <Route path="/addAd" element={<AddAd/>} />
           <Route path="/ad" element={<Ad/>} />
+          <Route path="/myOrders" element={<Orders isMyOrders={true}/>} />
+          <Route path="/orders" element={<Orders isMyOrders={false}/>} />
+          <Route path="/statistics" element={<Statistics/>} />
         </Routes>
         </div>
         

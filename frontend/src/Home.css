@@ -136,7 +136,7 @@
   font-weight: bold;
   color: #555;
   height: 100%;
-  font-size: 14px;
+  font-size: medium;
 }
 
 .s007 form .inner-form .basic-search .input-field .result-count span {
@@ -152,7 +152,7 @@
 }
 
 .s007 form .inner-form .advanced-search .desc {
-  font-size: 15px;
+  font-size: medium;
   color: #999;
   display: block;
   margin-bottom: 26px;
@@ -162,7 +162,7 @@
   display: -ms-flexbox;
   display: flex;
   -ms-flex-pack: justify;
-      justify-content: space-evenly;
+      justify-content: start;
   -ms-flex-align: center;
       align-items: center;
 }
