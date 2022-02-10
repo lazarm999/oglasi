@@ -17,6 +17,7 @@ module.exports = function(app, conn, env){
         ad.ownerName = user.firstName + ' ' + user.lastName
         try {
             if (files && files.pictures) {
+                if(!Array.isArray(files.pictures)) files.pictures = [files.pictures]
                 for (var i = 0; i < files.pictures.length; i++)
                     if (!files.pictures[i].mimetype.startsWith('image'))
                         res.status(400).json({message: "You can only upload images."})

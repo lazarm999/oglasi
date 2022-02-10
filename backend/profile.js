@@ -1,4 +1,4 @@
-const UserModel = require('./models/user')
+const UserModel = require('./models/userModel')
 
 module.exports = function(app){
     app.get("/user/:userId", async (req, res) => {
