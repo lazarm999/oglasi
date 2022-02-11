@@ -2,6 +2,8 @@ import { Component } from "react";
 import { useNavigate } from "react-router-dom";
 import './Home.css';
 import { Locations, Categories, Ads } from "./Utility";
+import axios from 'axios'
+import e from "cors";
 
 class Home extends Component {
     constructor(props) {
@@ -9,20 +11,61 @@ class Home extends Component {
         this.state = {
             location: "",
             category: "",
-            from: 0,
-            to: 0,
+            from: "",
+            to: "",
             searchText: "",
             sortBy: "",
-            ads: ["", "", ""],
-            sortByList: ["Price", "Date", "User's rating"]
+            sortByIndex: 0,
+            ads: [],
+            sortByList: ["", "Price", "Date", "User's rating"],
+            sortByParams: ["sortPrice", "sortTime", "sortRating"],
+            order: "asc",
+            page: 1
         };
+        this.fetchAds = this.fetchAds.bind(this)
+        this.resetSearchParams = this.resetSearchParams.bind(this)
     }
 
     componentDidMount(){
+        this.fetchAds(null, false)
+    }
+
+    fetchAds(e, loadMore){
+        if(e) e.preventDefault()
+        let that = this
+        console.log(this.state.location)
+        let params = {
+            ...this.state.category !== "" && { category: this.state.category},
+            ...this.state.location !== "" && { location: this.state.location},
+            ...this.state.from !== "" && { priceLow: this.state.from},
+            ...this.state.to !== "" && { priceHigh: this.state.to},
+            page: loadMore ? this.state.page : 1
+        }
+        params[this.state.sortByParams[this.state.sortByIndex]] = this.state.order
+        console.log(params)
+        axios.get('http://localhost:3030/ads/', {
+            params: params
+        })
+        .then(function (response) {
+            let data = response.data.data
+            console.log(data)
+            if(response.status === 200) {
+                that.setState((prevState) =>({
+                    ads: data,
+                    page: loadMore ? prevState.page + 1 : 2
+                }))
+            }
+        })
+        .catch(function (error) {
+            console.log(error)
+        });
+    }
+
+    resetSearchParams(){
+        window.location.reload()
     }
 
     render(){
-        console.log(this.state.location)
         return(
         <div className="padding">
             <div className="col-md-8 offset-md-2">
@@ -65,9 +108,13 @@ class Home extends Component {
                                         </div>
                                     </div>
                                     <div className="col-md-3">
-                                        <select className="form-control" name="sortBy" placeholder="Sort by"
-                                            onChange={(e) => this.setState({sortBy: e.target.value})}>
-                                            <option value="" disabled selected>Sort by</option>
+                                        <select className="form-control" name="sortBy" defaultValue={""}
+                                            onChange={(e) => {
+                                                this.setState({
+                                                    sortBy: e.target.value,
+                                                    sortByIndex: e.target.selectedIndex - 1
+                                                })
+                                            }}>
                                             {
                                                 this.state.sortByList.map((sortBy, i)=>(
                                                     <option key={i} value={sortBy}>{sortBy}</option>
@@ -75,15 +122,26 @@ class Home extends Component {
                                             }
                                         </select>
                                     </div>
-                                    <div className="row col-md-4" style={{marginTop: "10px"}}>
-                                            <div className="col-md-6">
-                                                <button className="btn-search">Search</button>
-                                            </div>
-                                            <div className="col-md-6">
-                                                <button className="btn-delete" id="delete">Reset</button>
-                                            </div>
+                                    <div className="row col-md-4">
+                                        <div className="col-md-5">
+                                            <input type="radio" name="order" value="asc" defaultChecked = {true}
+                                               onChange={(e) => this.setState({order: e.target.value})}/>
+                                            <label style={{marginLeft: "5px"}}>Asc</label>
+                                        </div>
+                                        <div className="col-md-5">
+                                            <input type="radio" name="order" value="desc"
+                                                onChange={(e) => this.setState({order: e.target.value})}/>
+                                            <label style={{marginLeft: "5px"}}>Desc</label>
+                                        </div>
                                     </div>
-                                    
+                                    <div className="row col-md-4" style={{marginTop: "10px"}}>
+                                        <div className="col-md-6">
+                                            <button className="btn-search" onClick={(e) => this.fetchAds(e, false)}>Search</button>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <button className="btn-delete" onClick={this.resetSearchParams} id="delete">Reset</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

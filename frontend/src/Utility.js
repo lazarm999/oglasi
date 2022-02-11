@@ -5,7 +5,7 @@ import { Steps } from 'rsuite'
 import "rsuite/dist/rsuite.min.css"
 
 export function fetchCategories(onSuccess, onError){
-    axios.get("http://localhost:3030/categories/")
+    axios.get("http://localhost:3030/getCategories/")
     .then(function (response) {
         let data = response.data.data
         if(response.status === 200) 
@@ -17,7 +17,7 @@ export function fetchCategories(onSuccess, onError){
 }
 
 export function fetchLocations(onSuccess, onError){
-    axios.get("http://localhost:3030/locations/")
+    axios.get("http://localhost:3030/getLocations/")
     .then(function (response) {
         let data = response.data.data
         if(response.status === 200) 
@@ -48,21 +48,21 @@ export class Locations extends React.Component{
     constructor(){
         super()
         this.state = {
-            locations: ["l1", "l2"]
+            locations: []
         }
     }
 
     componentDidMount(){
-        /*fetchLocations((data) => {
-            console.log(data)
+        fetchLocations((data) => {
+            this.setState({locations: ["", ...data]})
         }, (error) => {
             console.log(error)
-        })*/
+        })
     }
 
     render(){
         return(
-            <select className="form-control" name="locations" 
+            <select className="form-control" name="locations" defaultValue={""}
                 onChange={(e) => this.props.setLocation(e.target.value)}>
                 {
                     this.state.locations.map((location, i)=>(
@@ -78,21 +78,21 @@ export class Categories extends React.Component{
     constructor(){
         super()
         this.state = {
-            categories: ["c1", "c2"]
+            categories: []
         }
     }
 
     componentDidMount(){
-        /*fetchCategories((data) => {
-            console.log(data)
+        fetchCategories((data) => {
+            this.setState({categories: ["", ...data]})
         }, (error) => {
             console.log(error)
-        })*/
+        })
     }
 
     render(){
         return(
-            <select className="form-control" name="categories" 
+            <select className="form-control" name="categories" defaultValue={""}
                 onChange={(e) => this.props.setCategory(e.target.value)}>
                 {
                     this.state.categories.map((category, i)=>(
@@ -138,18 +138,19 @@ export class Ads extends React.Component {
             <div>
                 {
                     this.props.ads.map((ad, i) => (
-                        <div key={i} className="row" style={{backgroundColor: "white", width: "95%", marginLeft: "2.5%"}}>
+                        <div key={i} className="row" style={{backgroundColor: "white", width: "95%", marginLeft: "2.5%", marginTop: "10px"}}>
                             <div className="col-md-3">
-                                <img src="defaultProduct.png" width="100" height="100"/>
+                                <img src= { ad.picturePaths.length === 0 ? "defaultProduct.png" : "http://localhost:3030/" + ad.picturePaths[0]}
+                                    width="100" height="100"/>
                             </div>
                             <div className="col-md-4">
                                 <div className="col-md-12">
-                                    <a href={"/ad"} style={{textDecoration: "none"}}><h4>Ovo je naslov</h4></a>
+                                    <a href={"/ad"} style={{textDecoration: "none"}}><h4>{ad.title}</h4></a>
                                 </div>
-                                <div className="col-md-12">Ovo je opis ovog divnog proizvoda...</div>
+                                <div className="col-md-12">{ad.description}</div>
                             </div>
-                            <div className="col-md-3"><p>1500 din.</p></div>
-                            <div className="col-md-2"><p>Krusevac</p></div>
+                            <div className="col-md-3"><p>{ad.price} din.</p></div>
+                            <div className="col-md-2"><p>{ad.location}</p></div>
                             <hr style={{width: "95%", margin: "5px auto"}}/>
                         </div>
                     ))

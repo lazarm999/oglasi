@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { OrdersList } from "./Utility";
-import {  } from "react";
 
 class Orders extends React.Component {
     constructor(){

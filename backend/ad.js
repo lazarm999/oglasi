@@ -8,6 +8,7 @@ const RatingModel = require('./models/ratingModel')
 module.exports = function(app, conn, env){
     // {title, category, location, price, exchange, description}, files
     app.post("/postAd", async (req, res) => {
+        console.log(req.body.data)
         ad = JSON.parse(req.body.data)
         files = req.files
         ad.picturePaths = []
@@ -50,7 +51,7 @@ module.exports = function(app, conn, env){
         }
     })
 
-    // {?category&location&priceLow&priceHigh&page}
+    // ?category&location&priceLow&priceHigh&page
     // sortPrice/sortTime/sortRating=asc/desc
     app.get("/ads", async (req, res) => {
         pageSize = 10

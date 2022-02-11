@@ -2,6 +2,7 @@ import { Component } from "react"
 import { useNavigate } from "react-router-dom"
 import './AddAd.css'
 import axios from 'axios'
+import { Locations, Categories } from "./Utility";
 
 class AddAd extends Component {
     constructor(props) {
@@ -13,91 +14,46 @@ class AddAd extends Component {
         location: "",
         category: "",
         price: 0,
-        categories: ["c1", "c2"],
-        locations: ["l1","l2"],
         invalidAdInput: "",
-        photoFiles: []
+        photoFiles: {}
       }
-      this.fetchCategories = this.fetchCategories.bind(this)
-      this.fetchLocations = this.fetchLocations.bind(this)
       this.addAd = this.addAd.bind(this)
-    }
-
-    fetchCategories(){
-      let that = this
-      axios.get("http://localhost:3030/categories/")
-        .then(function (response) {
-            let data = response.data.data
-            console.log(data)
-            if(response.status === 200) {
-                that.setState({
-                    categories: data
-                })
-            }
-        })
-        .catch(function (error) {
-          console.log(error)
-        });
-    }
-
-    fetchLocations(){
-      let that = this
-      axios.get("http://localhost:3030/locations/")
-      .then(function (response) {
-          let data = response.data.data
-          console.log(data)
-          if(response.status === 200) {
-              that.setState({
-                  locations: data
-              })
-          }
-      })
-      .catch(function (error) {
-        console.log(error)
-      });
     }
 
     addAd(e){
       e.preventDefault()
       let that = this
-      console.log(this.state.location)
       if(this.state.title === "" || this.state.location === "" || this.state.category === "") {
-        this.setState({invalidAdInput: 'You need to fill all fields marked with *'}); 
+        this.setState({invalidAdInput: 'You need to fill all fields marked with *'})
         return
       }
-      /*let formData = new FormData()
-      let album = this.state.albumFiles
-      formData.append("albumName", this.state.albumName);
-      formData.append("songCount", this.state.albumFiles.length);
-      formData.append("song" + counter, album[counter])
-      formData.append("songsInfo", JSON.stringify(songsInfoList));
-      axios.post('http://localhost:3030/uploadAlbum/', formData, {
-          headers: {
-              'Authorization': localStorage.getItem('token'),
-              'Content-type': 'multipart/form-data'
-          }
-      })*/
-      axios.post('http://localhost:3030/ad/', {
+      
+      let formData = new FormData()
+      if(this.state.photoFiles[0] !== undefined)
+        for(let i = 0; i < this.state.photoFiles.length; i++)
+          formData.append("pictures", this.state.photoFiles[i])
+      formData.append("data", JSON.stringify({
         title: this.state.title,
         location: this.state.location,
         category: this.state.category,
         price: this.state.price,
         exchange: document.querySelector('.exchangeCb').checked,
         description: this.state.description
-      }// umesto ovog parametra treba da ide formdata
-      ,{
-        headers: {
-            'Content-type': 'multipart/form-data'
-        }
+      }))
+      axios.post('http://localhost:3030/postAd/', formData, {
+          headers: {
+              'Content-type': 'multipart/form-data'
+          }
       })
       .then(function (response) {
-          if(response.status === 200)
-              that.props.navigate('/addAd')
+        console.log(response.status === 201)
+        if(response.status === 201)
+          window.location.reload()
       })
       .catch(function (error) {
-          let data = error.response.data
-          if (error.response.status === 400) 
-              that.setState({invalidAdInput: data.message})
+        let data = error.response.data
+        if (error.response.status === 400) 
+            that.setState({invalidAdInput: data.message})
       });
     }
 
@@ -121,27 +77,17 @@ class AddAd extends Component {
                 <div className="row" style={{display: "flex", justifyContent: "space-between"}}>
                   <div className="col-md-3">
                       <label>Location *</label>
-                      <select id="addAdLocations" className="form-control" name="locations" 
-                        onChange={(e) => this.setState({location: e.target.value})}>
-                        {this.state.locations.map((location, i)=>(
-                          <option key={i} value={location}>{location}</option>
-                        ))}
-                      </select>
+                      <Locations setLocation = {(location) => this.setState({location: location})} />
                   </div>
 
                   <div className="col-md-3">
                     <label>Category *</label>
-                      <select id="addAdCategories" className="form-control" name="categories"
-                        onChange={(e) => this.setState({category: e.target.value})}>
-                        {this.state.categories.map((category, i)=>(
-                          <option key={i} value={category}>{category}</option>
-                        ))}
-                      </select>
+                    <Categories setCategory = {(category) => this.setState({category: category})} />
                   </div>
 
                   <div className="col-md-3">
                       <label>Price</label>
-                      <input type="number" className="form-control"
+                      <input type="number" className="form-control" min="0" value={this.state.price}
                         onChange={(e) => this.setState({price: e.target.value})}/>
                   </div>
 
@@ -158,7 +104,7 @@ class AddAd extends Component {
                 </div>
                 <div className="col" style={{marginTop: "10px"}}>
                   <h5>Upload photos:</h5>
-                  <input id="photoFiles" multiple accept="image/*" type="file" style={{marginTop: "10px"}}
+                  <input id="photoFiles" multiple accept=".png,.jpeg,.jpg" type="file" style={{marginTop: "10px"}}
                     onChange={(e) => this.setState({photoFiles: e.target.files})}/>
                 </div>
                 <button style={{marginTop: "20px"}} id="addAdBtn" type="submit" className="btn btn-warning btn-block" 
@@ -170,7 +116,7 @@ class AddAd extends Component {
 }
 
 function WithNavigate(props) {
-  let navigate = useNavigate();
+  let navigate = useNavigate()
   return <AddAd {...props} navigate={navigate} />
 }
 
