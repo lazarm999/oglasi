@@ -1,5 +1,5 @@
 import { Component } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import "react-responsive-carousel/lib/styles/carousel.min.css" // requires a loader
 import { Carousel } from 'react-responsive-carousel'
 import './Ad.css'
@@ -7,13 +7,16 @@ import { StarIcon, FillStarIcon } from './Utility'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import { Locations, Ratings } from "./Utility"
+import axios from "axios"
 
 class Ad extends Component{
     constructor(){
         super()
         this.state = {
             ratings: [1],
-            ad: {},
+            ad: {
+                picturePaths: []
+            },
             ratingText: "",
             ratingValues: [1, 2, 3, 4, 5],
             currentRating: 0,
@@ -21,11 +24,13 @@ class Ad extends Component{
             showUpdateModal: false,
             address: "",
             location: "",
-            ammount: 0,
+            quantity: 0,
             invalidOrderInput: "",
+            invalidUpdateInput: "",
             title: "",
             price: 0,
-            description: ""
+            description: "",
+            rateable: true
         }
         this.onStarClicked = this.onStarClicked.bind(this)
         this.makeOrder = this.makeOrder.bind(this)
@@ -33,10 +38,32 @@ class Ad extends Component{
         this.fetchRatings = this.fetchRatings.bind(this)
         this.deleteAd = this.deleteAd.bind(this)
         this.updateAd = this.updateAd.bind(this)
+
+        let pathname = window.location.href
+        this.state.ad._id = pathname.substring(pathname.lastIndexOf("/") + 1, pathname.length);
+    }
+
+    componentDidMount(){
+        this.fetchAd()
     }
 
     fetchAd(){
-
+        let that = this
+        axios.get("http://localhost:3030/getAd/" + this.state.ad._id)
+        .then(function(response){
+            let data = response.data.data
+            if(response.status === 200)
+                that.setState({
+                    ad: data,
+                    title: data.title,
+                    description: data.description,
+                    price: data.price,
+                    rateable: response.data.rateable
+                })
+        })
+        .catch(function(error){
+            console.log(error)
+        })
     }
 
     fetchRatings(){
@@ -51,24 +78,68 @@ class Ad extends Component{
     }
 
     makeOrder(){
-        if(this.state.ammount === 0) {
-            this.setState({invalidOrderInput: "Ammount must be greater than 0."})
+        if(this.state.quantity === 0) {
+            this.setState({invalidOrderInput: "Quantity must be greater than 0."})
             return
-        } else if (this.state.ammount === "" || this.state.address === "" || this.state.location === ""){
+        } else if (this.state.quantity === "" || this.state.address === "" || this.state.location === ""){
             this.setState({invalidOrderInput: "All fields must be filled."})
             return
         }
+        axios.post("http://localhost:3030/order/" + this.state.ad._id,{
+            quantity: this.state.quantity,
+            address: this.state.address,
+            city: this.state.location
+        })
+        .then((response) => {
+            console.log(response)
+            if(response.status === 201)
+                window.location.reload()
+        })
+        .catch(function(error){
+            console.log(error)
+        })
     }
 
-    deleteAd(){
-
+    deleteAd(e){
+        e.preventDefault()
+        if(this.state.title === ""){
+            this.setState({invalidUpdateInput: 'Title must not be empty.'})
+            return
+        }
+        axios.delete("http://localhost:3030/deleteAd/" + this.state.ad._id)
+        .then((response)=>{
+            console.log(response)
+            if(response.status === 204)
+                window.location.replace("http://localhost:3000/home")
+        })
+        .catch(function(error){
+            console.log(error)
+        })
     }
 
-    updateAd(){
-
+    updateAd(e){
+        e.preventDefault()
+        if(this.state.title === ""){
+            this.setState({invalidUpdateInput: 'Title must not be empty.'})
+            return
+        }
+        axios.put("http://localhost:3030/updateAd/" + this.state.ad._id,{
+            title: this.state.title,
+            description: this.state.description,
+            price: this.state.price
+        })
+        .then((response)=>{
+            console.log(response)
+            if(response.status === 204)
+                window.location.reload()
+        })
+        .catch(function(error){
+            console.log(error)
+        })
     }
 
     render(){
+        let ad = this.state.ad
         return(
             <div className="row col-md-6 offset-md-3" 
                 style={{backgroundColor: "white", display: "flex"}}>
@@ -90,9 +161,9 @@ class Ad extends Component{
                             </div>
 
                             <div className="form-group">
-                                <label>Ammount</label>
-                                <input type="number" className="form-control" value={this.state.ammount} min="0"
-                                    onChange={(e) => this.setState({ammount: e.target.value})}/>
+                                <label>Quantity</label>
+                                <input type="number" className="form-control" value={this.state.quantity} min="0"
+                                    onChange={(e) => this.setState({quantity: e.target.value})}/>
                             </div>
                             <div>
                                 <p id = "invalidOrderInput" 
@@ -131,7 +202,7 @@ class Ad extends Component{
                                     onChange={(e) => this.setState({price: e.target.value})}/>
                             </div>
                             <div>
-                                <p id = "invalidOrderInput" 
+                                <p id = "invalidUpdateInput" 
                                     style = {{display: this.state.invalidOrderInput === "" ? 'none' : 'block'}}>
                                         {this.state.invalidOrderInput}</p>
                             </div>
@@ -144,63 +215,81 @@ class Ad extends Component{
                     </Modal.Footer>
                 </Modal>
                 <div className="col-md-12">
-                    <h3>Ovo je naslov</h3>
+                    <h3>{ad.title}</h3>
                 </div>
                 <div className="col-md-4">
-                    <img src="defaultProduct.png" width="100" height="100"/>
+                    <img src= { ad.picturePaths.length === 0 ? "defaultProduct.png" : "http://localhost:3030/" + ad.picturePaths[0]}
+                         width="100" height="100"/>
                 </div>
                 <div className="col-md-4">
-                    <p style={{marginBottom: "0px"}}>Price: 100,00 din.</p>
-                    <button id="addAdBtn" type="submit" className="btn btn-warning btn-block oduButtons" 
-                        onClick={(e) => this.setState({showOrderModal: true})}>Order</button>
-                    <button id="addAdBtn" type="submit" className="btn btn-danger btn-block oduButtons" 
-                        onClick={this.deleteAd}>Delete</button>
-                    <button id="addAdBtn" type="submit" className="btn btn-primary btn-block oduButtons" 
-                        onClick={(e) => this.setState({showUpdateModal: true})}>Update</button>
+                    <p style={{marginBottom: "0px"}}>Price: {ad.price} din.</p>
+                    {
+                        ad.ownerId === localStorage.getItem("userId") ? 
+                        <button id="addAdBtn" type="submit" className="btn btn-danger btn-block oduButtons" 
+                        onClick={this.deleteAd}>Delete</button> : null
+                    }
+                    {
+                        ad.ownerId === localStorage.getItem("userId") ? 
+                        <button id="addAdBtn" type="submit" className="btn btn-primary btn-block oduButtons" 
+                        onClick={(e) => this.setState({showUpdateModal: true})}>Update</button> : null
+                    }
+                    {
+                        ad.ownerId !== localStorage.getItem("userId") ? 
+                        <button id="addAdBtn" type="submit" className="btn btn-warning btn-block oduButtons" 
+                        onClick={(e) => this.setState({showOrderModal: true})}>Order</button> : null
+                    }
                 </div>
                 <div className="col-md-4">
-                    <a href="/user" style={{textDecoration: "none"}}>Marko Nikolic</a>
-                    <p>0641179370</p>
+                    <a href= {"http://localhost:3000/profile/" + ad.ownerId} style={{textDecoration: "none"}}
+                        >{ad.ownerName}</a>
                 </div>
-                <div className="col-md-12">
-                    <p>
-                        ovo je jedan mnogo veliki opis koji je korisnik dodao
+                <h4>Description</h4>
+                <div className="col-md-12" style={{padding: "10px"}}>
+                    <p style={{marginLeft: "10px"}}>
+                        {ad.description}
                     </p>
                 </div>
-                <h4>Gallery</h4>
-                <div className="gallery col-md-12">
-                    <Carousel showThumbs={false}>
-                        <div>
-                            <img src="https://i.picsum.photos/id/1003/1181/1772.jpg?hmac=oN9fHMXiqe9Zq2RM6XT-RVZkojgPnECWwyEF1RvvTZk" />
-                        </div>
-                        <div>
-                            <img src="https://static.vecteezy.com/packs/media/components/global/search-explore-nav/img/vectors/term-bg-1-666de2d941529c25aa511dc18d727160.jpg" />
-                        </div>
-                        <div style={{width: "50%", height: "200px"}}>
-                            <img src="assets/3.jpeg" />
-                        </div>
-                    </Carousel>
-                </div>
-                <div className="form-group">
-                    <label style={{marginBottom: "10px"}}>Leave a rating</label>
-                    <div style={{marginBottom: "10px"}}>
-                    {
-                        this.state.ratingValues.map((rating, i) => (
-                            <a style={{cursor: "pointer", marginRight: "5px"}}
-                            key={i} onClick={(e) => this.onStarClicked(e, rating)}>
+                {
+                    ad.picturePaths.length > 0 ?
+                    <div>
+                        <h4>Gallery</h4>
+                        <div className="gallery col-md-12">
+                            <Carousel showThumbs={false}>
                                 {
-                                    rating <= this.state.currentRating ? 
-                                    <FillStarIcon /> : <StarIcon />
+                                    ad.picturePaths.map((picId, i) => (
+                                        <div  key={i}>
+                                            <img src={"http://localhost:3030/" + picId}/>
+                                        </div>
+                                    ))
                                 }
-                            </a>
-                        ))
-                    }
-                    </div>
-                    <textarea rows="5" className="form-control" cols="50" value={this.state.ratingText}
-                      onChange={(e) => this.setState({ratingText: e.target.value})}
-                      style={{marginBottom: "10px"}} />
-                    <button style={{marginBottom: "10px"}} className="btn btn-primary btn-block" onClick={this.postComment}>Rate</button>
-                </div>
+                                
+                            </Carousel>
+                        </div>
+                    </div> : null
+                }
+                {
+                    this.state.rateable ? 
+                    <div className="form-group">
+                        <label style={{marginBottom: "10px"}}>Leave a rating</label>
+                        <div style={{marginBottom: "10px"}}>
+                        {
+                            this.state.ratingValues.map((rating, i) => (
+                                <a style={{cursor: "pointer", marginRight: "5px"}}
+                                key={i} onClick={(e) => this.onStarClicked(e, rating)}>
+                                    {
+                                        rating <= this.state.currentRating ? 
+                                        <FillStarIcon /> : <StarIcon />
+                                    }
+                                </a>
+                            ))
+                        }
+                        </div>
+                        <textarea rows="5" className="form-control" cols="50" value={this.state.ratingText}
+                        onChange={(e) => this.setState({ratingText: e.target.value})}
+                        style={{marginBottom: "10px"}} />
+                        <button style={{marginBottom: "10px"}} className="btn btn-primary btn-block" onClick={this.postComment}>Rate</button>
+                    </div> : null
+                }
                 <h4 style={{marginBottom: "10px"}}>Ratings</h4>
                 <Ratings ratings={this.state.ratings} />
             </div>
@@ -209,8 +298,8 @@ class Ad extends Component{
 }
 
 function WithNavigate(props) {
-    let navigate = useNavigate();
-    return <Ad {...props} navigate={navigate} />
+    let navigate = useNavigate()
+    return <Ad {...props} navigate={navigate}/>
 }
   
 export default WithNavigate

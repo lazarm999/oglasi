@@ -3,6 +3,7 @@ import React from 'react'
 import './Utility.css'
 import { Steps } from 'rsuite'
 import "rsuite/dist/rsuite.min.css"
+import { useNavigate, useLocation } from "react-router-dom"
 
 export function fetchCategories(onSuccess, onError){
     axios.get("http://localhost:3030/getCategories/")
@@ -145,7 +146,10 @@ export class Ads extends React.Component {
                             </div>
                             <div className="col-md-4">
                                 <div className="col-md-12">
-                                    <a href={"/ad"} style={{textDecoration: "none"}}><h4>{ad.title}</h4></a>
+                                    <a href={"http://localhost:3000/ad/" + ad._id} style={{textDecoration: "none"}}
+                                        >
+                                        <h4>{ad.title}</h4>
+                                    </a>
                                 </div>
                                 <div className="col-md-12">{ad.description}</div>
                             </div>
@@ -169,34 +173,39 @@ export class OrdersList extends React.Component {
         return(
             <div>
                 {
-                    this.props.orders.map((order, i) => (
-                        <div key={i} className="row ordersListContainer" style={{backgroundColor: "white", width: "95%", marginLeft: "2.5%"}}>
-                            <div className="col-md-3">
-                                <img src="defaultProduct.png" width="100" height="100"/>
+                    this.props.orders.map((order, i) => {
+                        let orderStateText = order.phase === 0 ? "Confirm order" :
+                            order.phase === 1 ? "Product sent" :""
+                        return (
+                            <div key={i} className="row ordersListContainer" style={{backgroundColor: "white", width: "95%", marginLeft: "2.5%"}}>
+                                <div className="col-md-3">
+                                    <img src = {order.adPicture === undefined ? "defaultProduct.png" : "http://localhost:3030/" + order.adPicture} width="100" height="100"/>
+                                </div>
+                                <div className="col-md-9">
+                                    <a href={"http://localhost:3000/ad/" + order.adId} style={{textDecoration: "none"}}><p>{order.adTitle}</p></a>
+                                    <a href={"http://localhost:3000/profile/" + order.supplierId} style={{textDecoration: "none"}}>
+                                        <p>{order.supplierName}</p>
+                                    </a>
+                                    <p>{order.address}</p>
+                                    <p>{order.city}</p>
+                                    <p>Quantity: {order.quantity}</p>
+                                    <Steps current={order.phase}>
+                                        <Steps.Item title="Ordered" />
+                                        <Steps.Item title="Confirmed" />
+                                        <Steps.Item title="Sent" />
+                                    </Steps>
+                                    {
+                                        this.props.isMyOrders || orderStateText === "" ? null : 
+                                        <div>
+                                            <a href="#" className="btn btn-outline-primary" style={{marginTop: "10px"}}
+                                                onClick={(e) => this.props.changeOrderState(e, order.phase + 1, order._id)}>
+                                                {orderStateText}
+                                            </a>
+                                        </div>
+                                    }
+                                </div>
                             </div>
-                            <div className="col-md-9">
-                                <a href={"/ad"} style={{textDecoration: "none"}}><p>Ovo je naslov</p></a>
-                                <a href={"/profile"} style={{textDecoration: "none"}}><p>Marko Nikolic</p></a>
-                                <p>Patrisa Lumumbe 49/11</p>
-                                <p>Nis</p>
-                                <p>Quantity: 2</p>
-                                <Steps current={0}>
-                                    <Steps.Item title="Ordered" />
-                                    <Steps.Item title="Accepted" />
-                                    <Steps.Item title="Sent" />
-                                </Steps>
-                                {
-                                    this.props.isMyOrders ? null : 
-                                    <div>
-                                        <a href="#" className="btn btn-outline-primary" style={{marginTop: "10px"}}
-                                            onClick={(e) => this.props.changeOrderState(e, "novoStanje")}>
-                                            Potvrdi ili posalji
-                                        </a>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    ))
+                        )})
                 }
             </div>
         )

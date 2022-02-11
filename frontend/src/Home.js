@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import './Home.css';
 import { Locations, Categories, Ads } from "./Utility";
 import axios from 'axios'
-import e from "cors";
 
 class Home extends Component {
     constructor(props) {
@@ -21,7 +20,7 @@ class Home extends Component {
             sortByParams: ["sortPrice", "sortTime", "sortRating"],
             order: "asc",
             page: 1
-        };
+        }
         this.fetchAds = this.fetchAds.bind(this)
         this.resetSearchParams = this.resetSearchParams.bind(this)
     }
@@ -33,7 +32,6 @@ class Home extends Component {
     fetchAds(e, loadMore){
         if(e) e.preventDefault()
         let that = this
-        console.log(this.state.location)
         let params = {
             ...this.state.category !== "" && { category: this.state.category},
             ...this.state.location !== "" && { location: this.state.location},
@@ -42,13 +40,11 @@ class Home extends Component {
             page: loadMore ? this.state.page : 1
         }
         params[this.state.sortByParams[this.state.sortByIndex]] = this.state.order
-        console.log(params)
         axios.get('http://localhost:3030/ads/', {
             params: params
         })
         .then(function (response) {
             let data = response.data.data
-            console.log(data)
             if(response.status === 200) {
                 that.setState((prevState) =>({
                     ads: data,

@@ -16,8 +16,8 @@ class Profile extends Component {
             firstName: "",
             lastName: "",
             phone: "",
-            ratings: [1],
-            myAds: [1]
+            ratings: [],
+            myAds: []
         };
         this.fetchUser = this.fetchUser.bind(this)
         this.fetchAds = this.fetchAds.bind(this)
@@ -29,6 +29,7 @@ class Profile extends Component {
 
     componentDidMount(){
         this.fetchUser()
+        this.fetchAds()
     }
 
     fetchUser(){
@@ -52,15 +53,40 @@ class Profile extends Component {
     }
 
     fetchAds(){
-
+        let that = this
+        axios.get("http://localhost:3030/myAds/")
+        .then(function (response) {
+            let data = response.data.data
+            if(response.status === 200) {
+                that.setState({
+                    myAds: data
+                })
+            }
+        })
+        .catch(function (error) {
+            console.log(error)
+        });
     }
 
     fetchRatings(){
         
     }
 
-    editProfile(){
-
+    editProfile(e){
+        e.preventDefault()
+        axios.put("http://localhost:3030/updateProfile/",{
+            firstName: this.state.firstName,
+            lastName: this.state.lastName,
+            phone: this.state.phone
+        })
+        .then((response)=>{
+            console.log(response)
+            if(response.status === 204)
+                window.location.reload()
+        })
+        .catch(function(error){
+            console.log(error)
+        })
     }
 
     render(){
@@ -97,7 +123,7 @@ class Profile extends Component {
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="primary" onClick={this.makeOrder}>
+                        <Button variant="primary" onClick={this.editProfile}>
                             Submit
                         </Button>
                     </Modal.Footer>
@@ -152,9 +178,9 @@ class Profile extends Component {
 }
 
 function WithNavigate(props) {
-    let navigate = useNavigate();
-    let location = useLocation();
+    let navigate = useNavigate()
+    let location = useLocation()
     return <Profile {...props} navigate={navigate} location={location}/>
-  }
+}
   
-  export default WithNavigate
+export default WithNavigate
