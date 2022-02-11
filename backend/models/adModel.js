@@ -15,5 +15,8 @@ const AdSchema = new mongoose.Schema({
     ratingSum: {type: Number, default: 0},
     ratingAvg: {type: Number, default: 0},
 }, {collection: "ad", strict: true})
+AdSchema.index({title: 'text', description: 'text'}, {weights: {title: 5, description: 2}})
+AdSchema.index({ownerId: 1})
+// filtriramo po category, location, price, sortiram po ratingAvg, time, price
 
 module.exports = mongoose.model("AdModel", AdSchema)

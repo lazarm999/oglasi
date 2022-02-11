@@ -8,22 +8,23 @@ const RatingModel = require('./models/ratingModel')
 module.exports = function(app, conn, env){
     // {title, category, location, price, exchange, description}, files
     app.post("/postAd", async (req, res) => {
-        console.log(req.body.data)
-        ad = JSON.parse(req.body.data)
-        files = req.files
+        let ad = JSON.parse(req.body.data)
+        let files = req.files
         ad.picturePaths = []
 
-        let user = await UserModel.findOne({_id: req.user_id})
+        let user = await UserModel.findOne({_id: req.user_id}, ['firstName', 'lastName'])
         ad.ownerId = req.user_id
         ad.ownerName = user.firstName + ' ' + user.lastName
         try {
             if (files && files.pictures) {
                 if(!Array.isArray(files.pictures)) files.pictures = [files.pictures]
-                for (var i = 0; i < files.pictures.length; i++)
-                    if (!files.pictures[i].mimetype.startsWith('image'))
+                for (let i = 0; i < files.pictures.length; i++)
+                    if (!files.pictures[i].mimetype.startsWith('image')) {
                         res.status(400).json({message: "You can only upload images."})
-                for (var i = 0; i < files.pictures.length; i++) {
-                    fileName = uuidv4()
+                        return
+                    }
+                for (let i = 0; i < files.pictures.length; i++) {
+                    let fileName = uuidv4()
                     ad.picturePaths.push(fileName)
                     files.pictures[i].mv(path.join(env.IMAGES_PATH, fileName))
                 }
@@ -38,25 +39,28 @@ module.exports = function(app, conn, env){
     })
 
     app.get("/getAd/:adId", async (req, res) => {
-        id = req.params.adId
+        let id = req.params.adId
         try {
             let ad = await AdModel.findOne({_id: id})
             if (!ad) res.status(404).json({message: "Ad does not exist"})
-            let order = await OrderModel.find({ordererId: req.user_id, adId: id, phase: 2})
-            let rating = await RatingModel.find({raterId: req.user_id, adId: id})
-            res.status(200).json({message: "OK", data: ad, rateable: order.length > 0 && rating.length == 0})
+            else {
+                let order = await OrderModel.find({ordererId: req.user_id, adId: id, phase: 2})
+                let rating = await RatingModel.find({raterId: req.user_id, adId: id})
+                res.status(200).json({message: "OK", data: ad, rateable: order.length > 0 && rating.length == 0})
+            }
         } catch(error) {
             console.log(error)
             res.status(500).json({message: "Something went wrong."})
         }
     })
 
-    // ?category&location&priceLow&priceHigh&page
+    // ?category&location&priceLow&priceHigh&page&search
     // sortPrice/sortTime/sortRating=asc/desc
     app.get("/ads", async (req, res) => {
-        pageSize = 10
+        let pageSize = 2
         try {
-            filter = {
+            let filter = {
+                ...req.query.search && { $text: {$search: req.query.search}},
                 ...req.query.location && { location: req.query.location },
                 ...req.query.category && { category: req.query.category },
                 ...(req.query.priceLow || req.query.priceHigh) && { price: {
@@ -64,7 +68,7 @@ module.exports = function(app, conn, env){
                     ...req.query.priceHigh && { $lte: req.query.priceHigh }
                 }}
             }
-            options = {
+            let options = {
                 ...req.query.page && { skip: pageSize*(req.query.page-1) },
                 ...req.query.page && { limit: pageSize },
                 sort: {
@@ -73,20 +77,23 @@ module.exports = function(app, conn, env){
                     ...req.query.sortRating && {ratingAvg: req.query.sortRating}
                 }
             }
-            let ads = await AdModel.find(filter, null, options)
-            res.status(200).json({message: "OK", data: ads})
+            let ads = await AdModel.find(filter, ['title', 'location',
+                'price', 'description', 'picturePaths'], options)
+            let adCount = await AdModel.aggregate().match(filter).count("count")
+            res.status(200).json({message: "OK", data: ads, count: adCount.length > 0 ? adCount[0].count : 0})
         } catch(error) {
+            console.log(error)
             res.status(500).json({message: "Something went wrong."})
         }
     })
 
     // {title, category, location, price, exchange, description}
     app.put("/updateAd/:adId", async (req, res) => {
-        id = req.params.adId
-        const session = await conn.startSession();
+        let id = req.params.adId
+        let session = await conn.startSession();
         try {
             session.startTransaction()
-            const ad = await AdModel.findOne({_id: id})
+            let ad = await AdModel.findOne({_id: id}, ['ownerId'])
             if (ad.ownerId != req.user_id) res.status(403).json({message: "This is not your ad"})
             else {
                 await AdModel.updateOne(
@@ -98,14 +105,12 @@ module.exports = function(app, conn, env){
                         $set: {adTitle: req.body.title}
                     })
                     await RatingModel.updateMany({adId: id}, {
-                        $set: {
-                            adTitle: req.body.title
-                        }
+                        $set: {adTitle: req.body.title}
                     })
                 }
-                res.status(204).json({message: "Ad updated"})
             }
             await session.commitTransaction()
+            res.status(204).json({message: "Ad updated"})
         } catch (error) {
             await session.abortTransaction()
             if (error.name === "ValidationError") res.status(400).json({message: "Invalid values"})
@@ -115,9 +120,9 @@ module.exports = function(app, conn, env){
     })
 
     app.delete("/deleteAd/:adId", async (req, res) => {
-        id = req.params.adId
+        let id = req.params.adId
         try {
-            let ad = await AdModel.findOne({_id: id})
+            let ad = await AdModel.findOne({_id: id}, ['ownerId'])
             let user = await UserModel.findOne({_id: req.user_id}, ['isAdmin'])
             if (!ad) res.status(404).json({message: "Ad does not exist"})
             else if (!user.isAdmin && ad.ownerId != req.user_id) res.status(403).json({message: "This is not your ad"})
@@ -130,9 +135,10 @@ module.exports = function(app, conn, env){
         }
     })
 
-    app.get("/myAds", async (req, res) => {
+    app.get("/myAds/:id", async (req, res) => {
+        id = req.params.id
         try {
-            const ads = await AdModel.find({ownerId: req.user_id}, ['title', 'category', 'location', 'price', 'exchange', 'description',
+            let ads = await AdModel.find({ownerId: req.id}, ['title', 'category', 'location', 'price', 'exchange', 'description',
                 'picturePaths', 'time', 'ratingAvg'], {sort: {time: 'desc'}})
             res.status(200).json({message: "OK", data: ads})
         } catch (error) {

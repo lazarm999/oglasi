@@ -8,5 +8,6 @@ const UserSchema = new mongoose.Schema({
     phone: {type: String, default: ""},
     isAdmin: {type: Boolean, default: false, immutable: true}
 }, {collection: "user", strict: true})
+UserSchema.index({email: 1})
 
 module.exports = mongoose.model("UserModel", UserSchema)

@@ -6,12 +6,12 @@ module.exports = function(app){
 
     // {quantity, address, city}
     app.post("/order/:adId", async (req, res) => {
-        id = req.params.adId
+        let id = req.params.adId
         try {
-            const ad = await AdModel.findOne({_id: id}, ['title', 'ownerId', 'ownerName', 'picturePaths'])
+            let ad = await AdModel.findOne({_id: id}, ['title', 'ownerId', 'ownerName', 'picturePaths'])
             if (!ad) res.status(400).json({message: "Ad not found"})
             else {
-                const orderer = await UserModel.findOne({_id: req.user_id}, ['firstName', 'lastName'])
+                let orderer = await UserModel.findOne({_id: req.user_id}, ['firstName', 'lastName'])
                 order = req.body
                 order.ordererName = orderer.firstName + " " + orderer.lastName
                 order.ordererId = req.user_id
@@ -30,9 +30,9 @@ module.exports = function(app){
     })
 
     app.delete("/order/:orderId", async (req, res) => {
-        id = req.params.orderId
+        let id = req.params.orderId
         try {
-            const order = await OrderModel.findOne({_id: id}, ['ordererId', 'supplierId', 'phase'])
+            let order = await OrderModel.findOne({_id: id}, ['ordererId', 'supplierId', 'phase'])
             if (!order) res.status(404).json({message: "Order not found."})
             else if (order.phase == 2) res.status(400).json({message: "You cannot delete an already sent order."})
             else if (req.user_id == order.ordererId || req.user_id == order.supplierId) {
@@ -45,9 +45,9 @@ module.exports = function(app){
     })
 
     app.post("/confirmOrder/:orderId", async (req, res) => {
-        id = req.params.orderId
+        let id = req.params.orderId
         try {
-            const order = await OrderModel.findOne({_id: id}, ['phase', 'supplierId'])
+            let order = await OrderModel.findOne({_id: id}, ['phase', 'supplierId'])
             if (!order) res.status(404).json({message: "Order not found"})
             else if (order.supplierId != req.user_id) res.status(403).json({message: "You can only confirm your ad's orders"})
             else if (order.phase != 0) res.status(400).json({message: "You can only confirm unconfirmed orders"})
@@ -65,16 +65,17 @@ module.exports = function(app){
     })
 
     app.post("/sendOrder/:orderId", async (req, res) => {
-        id = req.params.orderId
+        let id = req.params.orderId
         try {
-            const order = await OrderModel.findOne({_id: id}, ['phase', 'supplierId'])
+            let order = await OrderModel.findOne({_id: id}, ['phase', 'supplierId'])
             if (!order) res.status(404).json({message: "Order not found"})
             else if (order.supplierId != req.user_id) res.status(403).json({message: "You can only send your ad's orders"})
             else if (order.phase != 1) res.status(400).json({message: "You can only send confirmed orders"})
             else {
                 await OrderModel.updateOne({_id: id}, {
                     $set: {
-                        phase: 2
+                        phase: 2,
+                        timeSent: Date.now() 
                     }
                 })
                 res.status(200).json({message: "Order sent"})
@@ -86,7 +87,7 @@ module.exports = function(app){
 
     app.get("/myOrders", async (req, res) => {
         try {
-            orders = await OrderModel.find({ordererId: req.user_id}, ['supplierName', 'supplierId',
+            let orders = await OrderModel.find({ordererId: req.user_id}, ['supplierName', 'supplierId',
                 'phase', 'adId', 'adTitle', 'adPicture', 'quantity', 'address', 'city'])
             res.status(200).json({message: "OK", data: orders})
         } catch (error){
@@ -96,7 +97,7 @@ module.exports = function(app){
 
     app.get("/orders", async (req, res) => {
         try {
-            orders = await OrderModel.find({supplierId: req.user_id}, ['ordererName', 'ordererId',
+            let orders = await OrderModel.find({supplierId: req.user_id}, ['ordererName', 'ordererId',
                 'phase', 'adId', 'adTitle', 'adPicture', 'quantity', 'address', 'city'])
             res.status(200).json({message: "OK", data: orders})
         } catch (error){

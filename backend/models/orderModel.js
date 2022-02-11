@@ -14,7 +14,10 @@ const OrderSchema = new mongoose.Schema({
         message: '{VALUE} is not an integer'
     }},
     address: {type: String, required: true},
-    city: {type: String, required: true}
+    city: {type: String, required: true},
+    timeSent: {type: Date, default: null}
 }, {collection: "order", strict: true})
+OrderSchema.index({ordererId: 1, adId: 1})
+OrderSchema.index({supplierId: 1})
 
 module.exports = mongoose.model("OrderModel", OrderSchema)

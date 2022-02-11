@@ -13,5 +13,7 @@ const RatingSchema = new mongoose.Schema({
     raterName:{type: String, required: true},
     time: {type: Date, default: Date.now}
 }, {collection: "rating", strict: true})
+RatingSchema.index({adOwnerId: 1})
+RatingSchema.index({adId: 1, raterId: 1})
 
 module.exports = mongoose.model("RatingModel", RatingSchema)
