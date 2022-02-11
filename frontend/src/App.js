@@ -98,9 +98,9 @@ class App extends React.Component {
           <Route path="/home" element={<Home/>} />
           <Route path="/profile/:userId" element={<Profile/>} />
           <Route path="/addAd" element={<AddAd/>} />
-          <Route path="/ad" element={<Ad/>} />
-          <Route path="/myOrders" element={<Orders isMyOrders={true}/>} />
-          <Route path="/orders" element={<Orders isMyOrders={false}/>} />
+          <Route path="/ad/:adId" element={<Ad/>} />
+          <Route path="/myOrders" element={<Orders key="myOrders" isMyOrders={true}/>} />
+          <Route path="/orders" element={<Orders key="orders" isMyOrders={false}/>} />
           <Route path="/statistics" element={<Statistics/>} />
         </Routes>
         </div>

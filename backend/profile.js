@@ -5,7 +5,6 @@ module.exports = function(app){
         let userId = req.params.userId
         try{
             let user = await UserModel.findOne({ _id: userId })
-            console.log(user)
             let data = (({ _id, email, firstName, lastName, phone }) => ({ _id, email, firstName, lastName, phone }))(user)
             res.status(200).json({
                 data: data
