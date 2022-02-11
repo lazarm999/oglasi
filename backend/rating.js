@@ -5,16 +5,16 @@ const RatingModel = require('./models/ratingModel')
 module.exports = function(app, conn) {
     // {rating, comment}
     app.post("/rate/:adId", async (req, res) => {
-        id = req.params.adId
-        r = req.body
-        const session = await conn.startSession();
+        let id = req.params.adId
+        let r = req.body
+        let session = await conn.startSession();
         try {
             session.startTransaction()
             let ad = await AdModel.findOne({_id: id}, ['title', 'ownerId', 'ratingCount', 'ratingSum'])
             if (!ad) res.status(404).json({message: "Ad does not exist"})
             else {
-                let order = await OrderModel.find({ordererId: req.user_id, adId: id, phase: 2})
-                let rating = await RatingModel.find({raterId: req.user_id, adId: id})
+                let order = await OrderModel.find({ordererId: req.user_id, adId: id, phase: 2}, ['ordererName'])
+                let rating = await RatingModel.find({raterId: req.user_id, adId: id}, ['_id'])
                 if (order.length == 0) res.status(400).json({message: "You can only rate ads which you have received"})
                 else if (rating.length > 0) res.status(400).json({message: "You can only rate an ad once"})
                 else {

@@ -6,7 +6,6 @@ const fileUpload = require('express-fileupload')
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const auth = require('./auth');
-const profile = require('./profile');
 const user = require('./user')
 const ad = require('./ad')
 const lookups = require('./lookups')
@@ -30,13 +29,12 @@ mongoose.connect('mongodb+srv://' + env['MONGO_USER'] + ':' + env['MONGO_PASS'] 
         console.log(err)
 });
 
-auth(app)
-profile(app)
+auth(app, env)
 
 app.use((req, res, next) => {
-    token = req.header('Authorization')
+    let token = req.header('Authorization')
     try {
-        var decoded = jwt.verify(token, env.JWT_SECRET)
+        let decoded = jwt.verify(token, env.JWT_SECRET)
         req.user_id = decoded.user_id
         next()
     } catch(e) {

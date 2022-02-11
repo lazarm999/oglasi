@@ -9,7 +9,7 @@ async function getLookupByType(req, res, type) {
     }
 }
 
-module.exports = function(app){
+module.exports = function(app) {
 
     app.get("/getLocations/", async (req, res) => {
         getLookupByType(req, res, "locations")

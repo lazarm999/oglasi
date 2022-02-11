@@ -4,13 +4,25 @@ const OrderModel = require('./models/orderModel');
 const RatingModel = require('./models/ratingModel')
 
 module.exports = function(app, conn){
+    app.get("/user/:userId", async (req, res) => {
+        let id = req.params.userId
+        try{
+            let user = await UserModel.findOne({ _id: id }, ['email', 'firstName',
+                'lastName', 'phone'])
+            if (!user) res.status(404).json({message: "User does not exist"})
+            else res.status(200).json({message: "OK", data: user})
+        } catch(error){
+            res.status(500).json({message: "Something went wrong."})
+        }
+    })
+
     // {firstName, lastName, phone}
     app.put("/updateProfile", async (req, res) => {
-        const session = await conn.startSession();
+        let session = await conn.startSession();
         try {
             session.startTransaction()
 
-            var user = await UserModel.findOneAndUpdate(
+            let user = await UserModel.findOneAndUpdate(
                 {_id: req.user_id},
                 {$set: req.body},
                 {runValidators: true, new: true})
