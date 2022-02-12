@@ -57,7 +57,7 @@ module.exports = function(app, conn, env){
     // ?category&location&priceLow&priceHigh&page&search
     // sortPrice/sortTime/sortRating=asc/desc
     app.get("/ads", async (req, res) => {
-        let pageSize = 2
+        let pageSize = 5
         try {
             let filter = {
                 ...req.query.search && { $text: {$search: req.query.search}},
