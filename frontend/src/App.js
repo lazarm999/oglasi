@@ -11,6 +11,7 @@ import AddAd from './AddAd'
 import Ad from './Ad'
 import Orders from './Orders'
 import Statistics from './Statistics'
+import axios from "axios";
 
 class App extends React.Component {
 
@@ -45,14 +46,18 @@ class App extends React.Component {
                   <li className="nav-item">
                     <Link className="nav-link" to={"/addAd"}>Add ad</Link>
                   </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to={"/statistics"}>Statistics</Link>
-                  </li>
+                  {
+                    localStorage.getItem("isAdmin") === "true" ?
+                    <li className="nav-item">
+                      <Link className="nav-link" to={"/statistics"}>Statistics</Link>
+                    </li> : null
+                  }
                   <li className="nav-item">
                     <a href="" className="nav-link" onClick={
                       (e) => {
                         e.preventDefault()
                         localStorage.removeItem('token')
+                        delete axios.defaults.headers.common['Authorization']
                         this.props.navigate('/login')
                       }
                     }>Log out</a>

@@ -24,7 +24,6 @@ class Orders extends React.Component {
         axios.get("http://localhost:3030/" + ordersType + "/")
         .then((response) => {
             let data = response.data.data
-            console.log(data)
             if(response.status === 200) {
                 this.setState({
                     orders: data

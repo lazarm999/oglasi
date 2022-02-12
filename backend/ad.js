@@ -138,7 +138,7 @@ module.exports = function(app, conn, env){
     app.get("/myAds/:id", async (req, res) => {
         id = req.params.id
         try {
-            let ads = await AdModel.find({ownerId: req.id}, ['title', 'category', 'location', 'price', 'exchange', 'description',
+            let ads = await AdModel.find({ownerId: id}, ['title', 'category', 'location', 'price', 'exchange', 'description',
                 'picturePaths', 'time', 'ratingAvg'], {sort: {time: 'desc'}})
             res.status(200).json({message: "OK", data: ads})
         } catch (error) {

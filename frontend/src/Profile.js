@@ -4,14 +4,14 @@ import { useNavigate, useLocation } from "react-router-dom"
 import './Profile.css'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
-import { Ratings, Ads } from './Utility' 
+import { Ratings, Ads } from './Utility'
 
 class Profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
             user: {},
-            activeTab: "ratings",
+            activeTab: "ads",
             showEditProfileModal: false,
             firstName: "",
             lastName: "",
@@ -30,6 +30,7 @@ class Profile extends Component {
     componentDidMount(){
         this.fetchUser()
         this.fetchAds()
+        this.fetchRatings()
     }
 
     fetchUser(){
@@ -54,7 +55,7 @@ class Profile extends Component {
 
     fetchAds(){
         let that = this
-        axios.get("http://localhost:3030/myAds/")
+        axios.get("http://localhost:3030/myAds/" + this.state.user._id)
         .then(function (response) {
             let data = response.data.data
             if(response.status === 200) {
@@ -69,7 +70,17 @@ class Profile extends Component {
     }
 
     fetchRatings(){
-        
+        axios.get("http://localhost:3030/userRatings/" + this.state.user._id)
+        .then((response) => {
+            let data = response.data.data
+            if(response.status === 200)
+                this.setState({
+                    ratings: data
+                })
+        })
+        .catch(function(error){
+            console.log(error)
+        })
     }
 
     editProfile(e){
@@ -80,7 +91,6 @@ class Profile extends Component {
             phone: this.state.phone
         })
         .then((response)=>{
-            console.log(response)
             if(response.status === 204)
                 window.location.reload()
         })
@@ -91,7 +101,7 @@ class Profile extends Component {
 
     render(){
         return(
-            <div className="row py-5 px-4 col-md-6 offset-md-3">
+            <div className="row px-4 col-md-6 offset-md-3 pb-5" >
                 <Modal show={this.state.showEditProfileModal} onHide={() => this.setState({showEditProfileModal: false})}>
                     <Modal.Header closeButton>
                         <Modal.Title>Edit profile</Modal.Title>
@@ -132,10 +142,6 @@ class Profile extends Component {
                     <div className="bg-white shadow rounded overflow-hidden">
                         <div className="px-4 pt-0 pb-4 cover">
                             <div className="media align-items-end profile-head"  style={{paddingBottom: "30px"}}>
-                                <div className="profile mr-3">
-                                    <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80" 
-                                    alt="..." width="130" className="rounded mb-2 img-thumbnail"/>
-                                </div>
                                 <div className="media-body mb-5 text-white">
                                     <h4 className="mt-0 mb-0">{this.state.user.firstName + " " + this.state.user.lastName}</h4>
                                     <p className="small" style={{marginBottom: "4px"}}> 
@@ -143,7 +149,7 @@ class Profile extends Component {
                                     </p>
                                     {
                                         this.state.user._id === localStorage.getItem("userId") ? 
-                                        <a href="#" className="btn btn-outline-primary"
+                                        <a className="btn btn-outline-primary"
                                             onClick={(e) => this.setState({showEditProfileModal: true})}>
                                             Edit profile
                                         </a>
@@ -156,11 +162,13 @@ class Profile extends Component {
                 </div>
                 <div>
                     <ul className="nav nav-tabs" style={{backgroundColor: "white", padding: "3px"}}>
-                        <li className="nav-item" onClick={(e) => this.setState({activeTab: "ads"})} style={{width: "50%", textAlign: "center"}}>
-                            <a className={"nav-link " + (this.state.activeTab === "ads" ? "active" : "")}  aria-current="page" href="#">My ads</a>
+                        <li className="nav-item" onClick={(e) => this.setState({activeTab: "ads"})} 
+                            style={{width: "50%", textAlign: "center", cursor: "pointer"}}>
+                            <a className={"nav-link " + (this.state.activeTab === "ads" ? "active" : "")}  aria-current="page" >My ads</a>
                         </li>
-                        <li className="nav-item" onClick={(e) => this.setState({activeTab: "ratings"})} style={{width: "50%", textAlign: "center"}}>
-                            <a className={"nav-link " + (this.state.activeTab === "ratings" ? "active" : "")} aria-current="page" href="#">Ratings</a>
+                        <li className="nav-item" onClick={(e) => this.setState({activeTab: "ratings"})} 
+                            style={{width: "50%", textAlign: "center", cursor: "pointer"}}>
+                            <a className={"nav-link " + (this.state.activeTab === "ratings" ? "active" : "")} aria-current="page" >Ratings</a>
                         </li>
                     </ul>
                 </div>

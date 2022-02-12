@@ -14,12 +14,13 @@ class Home extends Component {
             to: "",
             searchText: "",
             sortBy: "",
-            sortByIndex: 0,
+            sortByIndex: 1,
             ads: [],
-            sortByList: ["", "Price", "Date", "User's rating"],
+            sortByList: ["Price", "Date", "User's rating"],
             sortByParams: ["sortPrice", "sortTime", "sortRating"],
-            order: "asc",
-            page: 1
+            order: "desc",
+            page: 1,
+            count: -1
         }
         this.fetchAds = this.fetchAds.bind(this)
         this.resetSearchParams = this.resetSearchParams.bind(this)
@@ -37,6 +38,7 @@ class Home extends Component {
             ...this.state.location !== "" && { location: this.state.location},
             ...this.state.from !== "" && { priceLow: this.state.from},
             ...this.state.to !== "" && { priceHigh: this.state.to},
+            ...this.state.searchText !== "" && { search: this.state.searchText},
             page: loadMore ? this.state.page : 1
         }
         params[this.state.sortByParams[this.state.sortByIndex]] = this.state.order
@@ -45,10 +47,12 @@ class Home extends Component {
         })
         .then(function (response) {
             let data = response.data.data
+            let count = response.data.count
             if(response.status === 200) {
                 that.setState((prevState) =>({
-                    ads: data,
-                    page: loadMore ? prevState.page + 1 : 2
+                    ads: loadMore ? [...prevState.ads, ...data] : data,
+                    page: loadMore ? prevState.page + 1 : 2,
+                    count: count
                 }))
             }
         })
@@ -75,7 +79,7 @@ class Home extends Component {
                                 <input id="search" type="text" placeholder="Search..." 
                                     onChange={(e) => this.setState({searchText: e.target.value})}/>
                                 <div className="result-count">
-                                    <span>{this.state.ads.length} </span>results</div>
+                                    <span>{this.state.count < 0 ? 0 : this.state.count} </span>results</div>
                                 </div>
                             </div>
                             <div className="advanced-search">
@@ -111,6 +115,7 @@ class Home extends Component {
                                                     sortByIndex: e.target.selectedIndex - 1
                                                 })
                                             }}>
+                                            <option value="" disabled hidden>Sort by...</option>
                                             {
                                                 this.state.sortByList.map((sortBy, i)=>(
                                                     <option key={i} value={sortBy}>{sortBy}</option>
@@ -144,6 +149,8 @@ class Home extends Component {
                     </form>
                     <div className="card col-md-12" id="homeAdsContainer">
                         <Ads ads={this.state.ads} />
+                        <p style={{cursor: "pointer", textAlign: "center", margin: "10px auto", color: "#4A8BE3", fontWeight: "bold"}}
+                            onClick={(e) => this.fetchAds(e, true)}>Load more...</p>
                     </div>
                 </div>
             </div>

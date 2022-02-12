@@ -23,9 +23,12 @@ class Login extends Component {
         })
         .then(function (response) {
             let data = response.data.data
+
             if(response.status === 200) {
                 localStorage.setItem('token', data.token)
                 localStorage.setItem('userId', data.userId)
+                localStorage.setItem('isAdmin', data.isAdmin)
+                axios.defaults.headers.common['Authorization'] = data.token
                 that.props.navigate('/home')
             }
         })

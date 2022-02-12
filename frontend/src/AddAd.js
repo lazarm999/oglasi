@@ -46,7 +46,6 @@ class AddAd extends Component {
           }
       })
       .then(function (response) {
-        console.log(response.status === 201)
         if(response.status === 201)
           window.location.reload()
       })

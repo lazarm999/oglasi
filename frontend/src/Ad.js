@@ -13,13 +13,13 @@ class Ad extends Component{
     constructor(){
         super()
         this.state = {
-            ratings: [1],
+            ratings: [],
             ad: {
                 picturePaths: []
             },
             ratingText: "",
             ratingValues: [1, 2, 3, 4, 5],
-            currentRating: 0,
+            rating: 0,
             showOrderModal: false,
             showUpdateModal: false,
             address: "",
@@ -27,6 +27,7 @@ class Ad extends Component{
             quantity: 0,
             invalidOrderInput: "",
             invalidUpdateInput: "",
+            invalidRatingInput: "",
             title: "",
             price: 0,
             description: "",
@@ -38,6 +39,7 @@ class Ad extends Component{
         this.fetchRatings = this.fetchRatings.bind(this)
         this.deleteAd = this.deleteAd.bind(this)
         this.updateAd = this.updateAd.bind(this)
+        this.postRating = this.postRating.bind(this)
 
         let pathname = window.location.href
         this.state.ad._id = pathname.substring(pathname.lastIndexOf("/") + 1, pathname.length);
@@ -45,6 +47,7 @@ class Ad extends Component{
 
     componentDidMount(){
         this.fetchAd()
+        this.fetchRatings()
     }
 
     fetchAd(){
@@ -67,13 +70,23 @@ class Ad extends Component{
     }
 
     fetchRatings(){
-        
+        axios.get("http://localhost:3030/adRatings/" + this.state.ad._id)
+        .then((response) => {
+            let data = response.data.data
+            if(response.status === 200)
+                this.setState({
+                    ratings: data
+                })
+        })
+        .catch(function(error){
+            console.log(error)
+        })
     }
 
     onStarClicked(e, rating){
         e.preventDefault()
         this.setState({
-            currentRating: rating
+            rating: rating
         })
     }
 
@@ -91,7 +104,6 @@ class Ad extends Component{
             city: this.state.location
         })
         .then((response) => {
-            console.log(response)
             if(response.status === 201)
                 window.location.reload()
         })
@@ -108,7 +120,6 @@ class Ad extends Component{
         }
         axios.delete("http://localhost:3030/deleteAd/" + this.state.ad._id)
         .then((response)=>{
-            console.log(response)
             if(response.status === 204)
                 window.location.replace("http://localhost:3000/home")
         })
@@ -129,8 +140,26 @@ class Ad extends Component{
             price: this.state.price
         })
         .then((response)=>{
-            console.log(response)
             if(response.status === 204)
+                window.location.reload()
+        })
+        .catch(function(error){
+            console.log(error)
+        })
+    }
+
+    postRating(e){
+        e.preventDefault()
+        if(this.state.rating === 0 || this.state.comment === ""){
+            this.setState({invalidRatingInput: "You must leave a comment and rating must be greater than 0."})
+            return
+        }
+        axios.post("http://localhost:3030/rate/" + this.state.ad._id,{
+            rating: this.state.rating,
+            comment: this.state.ratingText,
+        })
+        .then((response)=>{
+            if(response.status === 201)
                 window.location.reload()
         })
         .catch(function(error){
@@ -218,7 +247,7 @@ class Ad extends Component{
                     <h3>{ad.title}</h3>
                 </div>
                 <div className="col-md-4">
-                    <img src= { ad.picturePaths.length === 0 ? "defaultProduct.png" : "http://localhost:3030/" + ad.picturePaths[0]}
+                    <img src= { ad.picturePaths.length === 0 ? "../defaultProduct.png" : "http://localhost:3030/" + ad.picturePaths[0]}
                          width="100" height="100"/>
                 </div>
                 <div className="col-md-4">
@@ -240,8 +269,9 @@ class Ad extends Component{
                     }
                 </div>
                 <div className="col-md-4">
-                    <a href= {"http://localhost:3000/profile/" + ad.ownerId} style={{textDecoration: "none"}}
-                        >{ad.ownerName}</a>
+                    <a href= {"http://localhost:3000/profile/" + ad.ownerId} style={{textDecoration: "none"}}>
+                        {ad.ownerName}
+                    </a>
                 </div>
                 <h4>Description</h4>
                 <div className="col-md-12" style={{padding: "10px"}}>
@@ -277,7 +307,7 @@ class Ad extends Component{
                                 <a style={{cursor: "pointer", marginRight: "5px"}}
                                 key={i} onClick={(e) => this.onStarClicked(e, rating)}>
                                     {
-                                        rating <= this.state.currentRating ? 
+                                        rating <= this.state.rating ? 
                                         <FillStarIcon /> : <StarIcon />
                                     }
                                 </a>
@@ -285,9 +315,13 @@ class Ad extends Component{
                         }
                         </div>
                         <textarea rows="5" className="form-control" cols="50" value={this.state.ratingText}
-                        onChange={(e) => this.setState({ratingText: e.target.value})}
-                        style={{marginBottom: "10px"}} />
-                        <button style={{marginBottom: "10px"}} className="btn btn-primary btn-block" onClick={this.postComment}>Rate</button>
+                            onChange={(e) => this.setState({ratingText: e.target.value})}
+                            style={{marginBottom: "10px"}} />
+                        <div>
+                            <p style = {{display: this.state.invalidRatingInput === "" ? 'none' : 'block', marginBottom: "10px"}}>
+                                    {this.state.invalidRatingInput}</p>
+                        </div>
+                        <button style={{marginBottom: "10px"}} className="btn btn-primary btn-block" onClick={this.postRating}>Rate</button>
                     </div> : null
                 }
                 <h4 style={{marginBottom: "10px"}}>Ratings</h4>

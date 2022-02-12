@@ -18,7 +18,6 @@ module.exports = function(app, conn) {
                 if (order.length == 0) res.status(400).json({message: "You can only rate ads which you have received"})
                 else if (rating.length > 0) res.status(400).json({message: "You can only rate an ad once"})
                 else {
-                    // moze rejting
                     r.adId = id
                     r.adTitle = ad.title
                     r.adOwnerId = ad.ownerId

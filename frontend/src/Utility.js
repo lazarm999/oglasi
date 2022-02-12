@@ -55,7 +55,7 @@ export class Locations extends React.Component{
 
     componentDidMount(){
         fetchLocations((data) => {
-            this.setState({locations: ["", ...data]})
+            this.setState({locations: data})
         }, (error) => {
             console.log(error)
         })
@@ -65,6 +65,7 @@ export class Locations extends React.Component{
         return(
             <select className="form-control" name="locations" defaultValue={""}
                 onChange={(e) => this.props.setLocation(e.target.value)}>
+                <option value="" disabled hidden>Location...</option>
                 {
                     this.state.locations.map((location, i)=>(
                         <option key={i} value={location}>{location}</option>
@@ -85,7 +86,7 @@ export class Categories extends React.Component{
 
     componentDidMount(){
         fetchCategories((data) => {
-            this.setState({categories: ["", ...data]})
+            this.setState({categories: data})
         }, (error) => {
             console.log(error)
         })
@@ -95,6 +96,7 @@ export class Categories extends React.Component{
         return(
             <select className="form-control" name="categories" defaultValue={""}
                 onChange={(e) => this.props.setCategory(e.target.value)}>
+                <option value="" disabled hidden>Category...</option>
                 {
                     this.state.categories.map((category, i)=>(
                         <option key={i} value={category}>{category}</option>
@@ -114,13 +116,21 @@ export class Ratings extends React.Component {
         return(
             <div>
                 {
-                    this.props.ratings.map((e, i) =>
+                    this.props.ratings.map((rating, i) =>
                         <div key = {i} className="ratingContainer" style={{backgroundColor: "white"}}>
-                            <a href={"/profile/"} style={{textDecoration: "none"}}>
-                                <p style={{marginBottom: "0px", display: "inline"}}>{"@" + "Lazar Minic"}</p>
+                            <a href={"http://localhost:3000/profile/" + rating.raterId} style={{textDecoration: "none", fontSize: "medium"}}>
+                                <p style={{marginBottom: "0px", display: "inline"}}>{rating.raterName} </p>
                             </a>
-                            <p style={{marginTop: "0px", fontSize: "15px", display: "inline"}}> • 5 stars</p>
-                            <p style={{fontSize: "medium"}}>Ovo je jedan jako zanimljiv komentar</p>
+                            <p style={{marginTop: "0px", fontSize: "15px", display: "inline"}}>{new Date(rating.time).toLocaleString()}</p>
+                            <p style={{marginTop: "0px", fontSize: "15px", display: "inline"}}> • {rating.rating} stars</p>
+                            {
+                                rating.adId ? 
+                                <a href={"http://localhost:3000/ad/" + rating.adId}
+                                    style={{textDecoration: "none", fontSize: "medium"}}>
+                                    <p style={{marginBottom: "0px"}}>{rating.adTitle} </p>
+                                </a> : null
+                            }
+                            <p style={{fontSize: "medium"}}>{rating.comment}</p>
                         </div>
                     )
                 }
@@ -141,7 +151,7 @@ export class Ads extends React.Component {
                     this.props.ads.map((ad, i) => (
                         <div key={i} className="row" style={{backgroundColor: "white", width: "95%", marginLeft: "2.5%", marginTop: "10px"}}>
                             <div className="col-md-3">
-                                <img src= { ad.picturePaths.length === 0 ? "defaultProduct.png" : "http://localhost:3030/" + ad.picturePaths[0]}
+                                <img src= { ad.picturePaths.length === 0 ? "../defaultProduct.png" : "http://localhost:3030/" + ad.picturePaths[0]}
                                     width="100" height="100"/>
                             </div>
                             <div className="col-md-4">
@@ -151,7 +161,7 @@ export class Ads extends React.Component {
                                         <h4>{ad.title}</h4>
                                     </a>
                                 </div>
-                                <div className="col-md-12">{ad.description}</div>
+                                <div className="col-md-12 adDesc">{ad.description}</div>
                             </div>
                             <div className="col-md-3"><p>{ad.price} din.</p></div>
                             <div className="col-md-2"><p>{ad.location}</p></div>
@@ -179,12 +189,14 @@ export class OrdersList extends React.Component {
                         return (
                             <div key={i} className="row ordersListContainer" style={{backgroundColor: "white", width: "95%", marginLeft: "2.5%"}}>
                                 <div className="col-md-3">
-                                    <img src = {order.adPicture === undefined ? "defaultProduct.png" : "http://localhost:3030/" + order.adPicture} width="100" height="100"/>
+                                    <img src = {order.adPicture === undefined ? "defaultProduct.png" : "http://localhost:3030/" + order.adPicture} 
+                                        width="100" height="100"/>
                                 </div>
                                 <div className="col-md-9">
                                     <a href={"http://localhost:3000/ad/" + order.adId} style={{textDecoration: "none"}}><p>{order.adTitle}</p></a>
-                                    <a href={"http://localhost:3000/profile/" + order.supplierId} style={{textDecoration: "none"}}>
-                                        <p>{order.supplierName}</p>
+                                    <a href={"http://localhost:3000/profile/" + (order.supplierId ? order.supplierId : order.ordererId)} 
+                                    style={{textDecoration: "none"}}>
+                                        <p>{order.supplierName ? order.supplierName : order.ordererName}</p>
                                     </a>
                                     <p>{order.address}</p>
                                     <p>{order.city}</p>
