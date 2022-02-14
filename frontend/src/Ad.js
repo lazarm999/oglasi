@@ -245,6 +245,7 @@ class Ad extends Component{
                 </Modal>
                 <div className="col-md-12">
                     <h3>{ad.title}</h3>
+                    <p style={{fontStyle: "italic"}}>{new Date(ad.time).toLocaleDateString()}</p>
                 </div>
                 <div className="col-md-4">
                     <img src= { ad.picturePaths.length === 0 ? "../defaultProduct.png" : "http://localhost:3030/" + ad.picturePaths[0]}
@@ -252,6 +253,7 @@ class Ad extends Component{
                 </div>
                 <div className="col-md-4">
                     <p style={{marginBottom: "0px"}}>Price: {ad.price} din.</p>
+                    <p style={{marginBottom: "0px"}}>{"Exchange " + (ad.exchange ? "" : "not ") + "possible" }</p>
                     {
                         ad.ownerId === localStorage.getItem("userId") ? 
                         <button id="addAdBtn" type="submit" className="btn btn-danger btn-block oduButtons" 
@@ -272,6 +274,8 @@ class Ad extends Component{
                     <a href= {"http://localhost:3000/profile/" + ad.ownerId} style={{textDecoration: "none"}}>
                         {ad.ownerName}
                     </a>
+                    <p>{ad.location}</p>
+                    <p style={{marginTop: "0px"}}>Category: {ad.category}</p>
                 </div>
                 <h4>Description</h4>
                 <div className="col-md-12" style={{padding: "10px"}}>
@@ -324,7 +328,7 @@ class Ad extends Component{
                         <button style={{marginBottom: "10px"}} className="btn btn-primary btn-block" onClick={this.postRating}>Rate</button>
                     </div> : null
                 }
-                <h4 style={{marginBottom: "10px"}}>Ratings</h4>
+                <h4 style={{marginBottom: "10px"}}>Ratings { (ad.ratingAvg !== 0 ? " (avg. " + ad.ratingAvg + ")" : "")}</h4>
                 <Ratings ratings={this.state.ratings} />
             </div>
         )
